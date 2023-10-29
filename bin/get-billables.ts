@@ -1,19 +1,11 @@
 /* eslint-disable no-console */
-// import { BillableReport } from "../src/toggl/BillableReport";
-import { buildClientMap } from "../src/toggl/buildClientMap";
-import { buildUserMap } from "../src/toggl/buildUserMap";
+import { BillableSummaryMessage } from "../src/bot/BillableSummaryMessage";
 
 (async () => {
   const dotenv = await import("dotenv")
   dotenv.config()
-  // const report = new BillableReport(new Date("2023-10-01"), new Date("2023-10-31"))
-  // const results = await report.generate()
+  const report = new BillableSummaryMessage(new Date("2023-10-01"), new Date("2023-10-31"))
+  const results = await report.build()
 
-  // console.log(results)
-
-  // const clientMap = await buildClientMap()
-  // console.log(clientMap)
-
-  const userMap = await buildUserMap()
-  console.log(userMap)
+  console.log(results)
 })()

@@ -1,5 +1,6 @@
 import { format } from "date-fns"
 import { TogglReportsClient } from "./TogglReportsClient"
+import { BillableReportResponse } from "./BillableReportResponse"
 export class BillableReport {
   private startDate: Date
   private endDate: Date
@@ -11,14 +12,17 @@ export class BillableReport {
 
   async generate() {
     const http = await TogglReportsClient.instance.http()
-    return http.post(`summary/time_entries`, {
+    return http.post<BillableReportResponse>(`summary/time_entries`, {
+      responseType: "json",
       json: {
         start_date: this.formattedStartDate,
         end_date: this.formattedEndDate,
         grouping: "clients",
-        sub_grouping: "users"
+        sub_grouping: "users",
+        rounding: 0,
+        rounding_minutes: 15
       },
-    })
+    }).then((resp) => resp.body)
   }
 
   get formattedStartDate() {

@@ -9,7 +9,7 @@ export const buildClientMap = async () => {
   })
 
   return resp.body.reduce((map: Record<string, string>, client) => {
-    if (!client.name.match(/Launch Academy/i)) {
+    if (client.name && !client.name.match(/Launch Academy/i) && !client.name.match(/Launchers/)) {
       map[client.id.toString()] = client.name
     }
     return map
