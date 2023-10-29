@@ -21,11 +21,15 @@
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.0",
     "lambda-local": "^2.1.2",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "@slack/bolt": "^3.14.0",
     "aws-lambda": "^1.0.7",
-    "botbuilder-adapter-slack": "^1.0.14"
+    "botbuilder-adapter-slack": "^1.0.14",
+    "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
+    "got": "^13.0.0"
   }
 }

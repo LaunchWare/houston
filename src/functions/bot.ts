@@ -18,7 +18,7 @@ const app = new App({
   receiver,
 })
 
-app.command('/confirmbillable', async ({ command, ack, say }) => {
+app.command('/confirmbillable', async ({ ack, say }) => {
   await ack()
   await say("pong")
 })
