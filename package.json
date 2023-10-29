@@ -1,0 +1,31 @@
+{
+  "name": "houston",
+  "version": "0.0.1",
+  "description": "Mission control for consulting operations",
+  "main": "dist/app.js",
+  "author": "Dan Pickett <dpickett@users.noreply.github.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "dev:watch": "yarn run nodemon --exec sam build",
+    "dev:serve": "sam local start-api --env-vars ./.env.development.json --debug"
+  },
+  "devDependencies": {
+    "@launchware/eslint-config-node": "^0.0.4",
+    "@types/aws-lambda": "^8.10.125",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "esbuild": "^0.19.5",
+    "eslint": "^8.52.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.0",
+    "lambda-local": "^2.1.2",
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "@slack/bolt": "^3.14.0",
+    "aws-lambda": "^1.0.7",
+    "botbuilder-adapter-slack": "^1.0.14"
+  }
+}
