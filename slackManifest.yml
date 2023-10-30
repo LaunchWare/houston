@@ -1,0 +1,47 @@
+display_information:
+  name: Houston
+features:
+  bot_user:
+    display_name: Houston
+    always_online: true
+  slash_commands:
+    - command: /confirm-for-invoices
+      url: https://d0ilzamq03.execute-api.us-east-2.amazonaws.com/Prod/slack/events
+      description: Solicit billable time confirmation
+      should_escape: false
+    - command: /confirm-weekly-hours
+      url: https://d0ilzamq03.execute-api.us-east-2.amazonaws.com/Prod/slack/events
+      description: Solicit weekly hours
+      usage_hint: "[YYYY-mm-dd] [YYYY-mm-dd]"
+      should_escape: false
+oauth_config:
+  redirect_urls:
+    - https://d0ilzamq03.execute-api.us-east-2.amazonaws.com/Prod/slack/events
+  scopes:
+    bot:
+      - app_mentions:read
+      - channels:history
+      - channels:join
+      - chat:write
+      - commands
+      - im:history
+      - im:read
+      - im:write
+      - incoming-webhook
+      - mpim:history
+      - mpim:read
+      - mpim:write
+      - reactions:read
+      - chat:write.customize
+settings:
+  event_subscriptions:
+    request_url: https://d0ilzamq03.execute-api.us-east-2.amazonaws.com/Prod/slack/events
+    bot_events:
+      - message.channels
+      - message.im
+      - message.mpim
+      - reaction_added
+      - reaction_removed
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

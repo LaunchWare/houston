@@ -3,6 +3,15 @@ import { buildClientMap } from "../toggl/buildClientMap"
 import { buildUserMap } from "../toggl/buildUserMap"
 import { formatBillableTime } from "./formatBillableTime"
 
+export interface ClientGroup {
+  name: string
+  entries: ProfessionalEntry[]
+}
+
+export interface ProfessionalEntry {
+  name: string
+  time: string
+}
 export class BillableSummaryMessage {
   private startDate: Date
   private endDate: Date
@@ -11,7 +20,7 @@ export class BillableSummaryMessage {
     this.endDate = endDate
   }
 
-  async build() {
+  async data() {
     const clientMap = await this.fetchClientMap()
     const userMap = await this.fetchUserMap()
     const billableReport = await this.fetchBillableReport()
@@ -19,14 +28,40 @@ export class BillableSummaryMessage {
       if (group && group.id) {
         const clientName = clientMap[group.id.toString()]
         if (clientName) {
-          map[clientName] = group.sub_groups.reduce((subMap, subGroup) => {
-            subMap[userMap[subGroup.id.toString()]] = formatBillableTime(subGroup.seconds)
-            return subMap
-          }, {} as Record<string, string>)
+          return [
+            ...map,
+            {
+              name: clientName,
+              entries: group.sub_groups.reduce((subMap, subGroup) => {
+                subMap = [
+                  ...subMap,
+                  {
+                    name: userMap[subGroup.id.toString()],
+                    time: formatBillableTime(subGroup.seconds)
+                  }
+                ]
+                return subMap
+              }, [] as ProfessionalEntry[])
+            }
+          ]
         }
       }
       return map
-    }, {} as Record<string, Record<string, string>>)
+    }, [] as ClientGroup[])
+  }
+  async build() {
+    const data = await this.data()
+    return data.reduce((messages, clientGroup) => {
+      return [
+        ...messages,
+        ...clientGroup.entries.reduce((subMessages, entry) => {
+          return [
+            ...subMessages,
+            `- *${entry.name}*: Billed ${clientGroup.name} for ${entry.time}`
+          ]
+        }, [] as string[])
+      ]
+    }, [] as string[])
   }
 
   private async fetchBillableReport() {

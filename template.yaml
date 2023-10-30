@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  sam-nodejs-app
+  Houston Slack Bot
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -11,7 +11,6 @@ Globals:
     CodeUri: ./
     Architectures:
       - x86_64
-
 Resources:
   BotFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -19,18 +18,78 @@ Resources:
       Handler: app.botHandler
       Environment:
         Variables:
-          SLACK_APP_ID:
-          SLACK_CLIENT_ID:
-          SLACK_CLIENT_SECRET:
-          SLACK_SIGNING_SECRET:
-          SLACK_BOT_TOKEN:
+          SLACK_APP_ID: "{{resolve:ssm:/houston/production/SLACK_APP_ID:1}}"
+          SLACK_CLIENT_ID: "{{resolve:ssm:/houston/production/SLACK_CLIENT_ID:1}}"
+          SLACK_CLIENT_SECRET: "{{resolve:ssm:/houston/production/SLACK_CLIENT_SECRET:1}}"
+          SLACK_SIGNING_SECRET: "{{resolve:ssm:/houston/production/SLACK_SIGNING_SECRET:1}}"
+          SLACK_BOT_TOKEN: "{{resolve:ssm:/houston/production/SLACK_BOT_TOKEN:1}}"
+          TOGGL_API_TOKEN: "{{resolve:ssm:/houston/production/TOGGL_API_TOKEN:1}}"
+          TOGGL_WORKSPACE_ID: "{{resolve:ssm:/houston/production/TOGGL_WORKSPACE_ID:1}}"
+          SLACK_WEBHOOK_URL: "{{resolve:ssm:/houston/production/SLACK_WEBHOOK_URL:1}}"
       Events:
         Bot:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /slack/events
             Method: post
-
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints:
+        - ./src/app.ts
+  WeeklyReminder:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.weeklyReminderHandler
+      Environment:
+        Variables:
+          SLACK_APP_ID: "{{resolve:ssm:/houston/production/SLACK_APP_ID:1}}"
+          SLACK_CLIENT_ID: "{{resolve:ssm:/houston/production/SLACK_CLIENT_ID:1}}"
+          SLACK_CLIENT_SECRET: "{{resolve:ssm:/houston/production/SLACK_CLIENT_SECRET:1}}"
+          SLACK_SIGNING_SECRET: "{{resolve:ssm:/houston/production/SLACK_SIGNING_SECRET:1}}"
+          SLACK_BOT_TOKEN: "{{resolve:ssm:/houston/production/SLACK_BOT_TOKEN:1}}"
+          TOGGL_API_TOKEN: "{{resolve:ssm:/houston/production/TOGGL_API_TOKEN:1}}"
+          TOGGL_WORKSPACE_ID: "{{resolve:ssm:/houston/production/TOGGL_WORKSPACE_ID:1}}"
+          SLACK_WEBHOOK_URL: "{{resolve:ssm:/houston/production/SLACK_WEBHOOK_URL:1}}"
+      Events:
+        WeeklyEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(50 23 ? * SUN *)
+            Enabled: true
+            Name: weekly-reminder
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints:
+        - ./src/app.ts
+  MonthlyReminder:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.monthlyReminderHandler
+      Environment:
+        Variables:
+          SLACK_APP_ID: "{{resolve:ssm:/houston/production/SLACK_APP_ID:1}}"
+          SLACK_CLIENT_ID: "{{resolve:ssm:/houston/production/SLACK_CLIENT_ID:1}}"
+          SLACK_CLIENT_SECRET: "{{resolve:ssm:/houston/production/SLACK_CLIENT_SECRET:1}}"
+          SLACK_SIGNING_SECRET: "{{resolve:ssm:/houston/production/SLACK_SIGNING_SECRET:1}}"
+          SLACK_BOT_TOKEN: "{{resolve:ssm:/houston/production/SLACK_BOT_TOKEN:1}}"
+          TOGGL_API_TOKEN: "{{resolve:ssm:/houston/production/TOGGL_API_TOKEN:1}}"
+          TOGGL_WORKSPACE_ID: "{{resolve:ssm:/houston/production/TOGGL_WORKSPACE_ID:1}}"
+          SLACK_WEBHOOK_URL: "{{resolve:ssm:/houston/production/SLACK_WEBHOOK_URL:1}}"
+      Events:
+        MonthlyEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 4 1 * ? *)
+            Enabled: true
+            Name: monthly-reminder
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
